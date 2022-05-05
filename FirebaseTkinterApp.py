@@ -101,7 +101,7 @@ class FirebaseTkinterApp(tk.Tk):
 
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.show_frame(UserHomepage)
+        self.show_frame(Disclaimer)
 
         def callback(self, url):
             webbrowser.open_new(url)
