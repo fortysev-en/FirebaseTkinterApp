@@ -156,6 +156,7 @@ class FirebaseTkinterApp(tk.Tk):
         status_label_top_right = Label(self, text="", font=('ariel', 10, 'bold'), bd=1, relief=SUNKEN, anchor=E)
         status_label_top_right.place(x=400, y=0, width=200, height=20)
 
+        # A single Firebase session is valid for 60 mins / 1 hour hence the countdown to display the time remaining, user after this will have to login again
         def update_statusbar():
             if '@' not in (self.app_login_cred['email'].get()):
                 time.sleep(2)
@@ -324,10 +325,6 @@ class LoginPage(tk.Frame):
             login_label.place(x=160, y=190)
             login_label.bind("<Button-1>", raise_login_frame)
 
-            # reset_pwd_label = Label(pass_reset_frame, text="Forgot Password?", fg="blue", cursor="hand2")
-            # reset_pwd_label.place(x=165, y=180)
-            # reset_pwd_label.bind("<Button-1>", call_reset_pwd)
-
             pass_reset_frame.place(x=85, y=260, height=240, width=430)
 
         def log_user(controller):
@@ -373,9 +370,6 @@ class LoginPage(tk.Frame):
         passwordEntry.delete('0', 'end')
         passwordEntry.insert(0, 'Password')
         passwordEntry.bind("<FocusIn>", pass_focus)
-
-        # signup_btn = Button(self, text="Sign Up", font=('ariel', 10, 'bold'), command=lambda: threading.Thread(target=lambda: reg_user(controller)).start())
-        # signup_btn.place(x=160, y=410, width=100)
 
         login_btn = Button(login_frame, text="Login", font=('ariel', 10, 'bold'),
                            command=lambda: threading.Thread(target=lambda: log_user(controller)).start())
@@ -424,6 +418,7 @@ class UserHomepage(tk.Frame):
         Button(self, text="Exit", font=('ariel', 10, 'bold'), fg="white", bg="#c00000",
                command=lambda: controller.distroy_window()).place(
             x=440, y=520, width=110)
+
 
 class About(tk.Frame):
     def __init__(self, parent, controller):
@@ -474,6 +469,7 @@ class About(tk.Frame):
         Button(self, text="Exit", font=('ariel', 10, 'bold'), fg="white", bg="#c00000",
                command=lambda: controller.distroy_window()).place(
             x=440, y=520, width=110)
+
 
 class DonatePage(tk.Frame):
     def __init__(self, parent, controller):
@@ -592,6 +588,7 @@ class DonatePage(tk.Frame):
         Button(self, text="Exit", font=('ariel', 10, 'bold'), fg="white", bg="#c00000",
                command=lambda: controller.distroy_window()).place(
             x=440, y=520, width=110)
+
 
 class StartFrame(tk.Frame):
     def __init__(self, parent, controller):
