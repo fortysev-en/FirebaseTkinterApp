@@ -2,16 +2,18 @@ import shutil
 import threading
 import time
 import tkinter as tk
-from tkinter import Label, Button, Menu, messagebox, StringVar, Entry, X, BOTTOM, SUNKEN, W, E, Text, END
+from tkinter import Label, Button, Menu, messagebox, StringVar, Entry, X, BOTTOM, SUNKEN, W, E
 import os
 import webbrowser
 import pyrebase
-import json
 import requests
 
 
 class FirebaseConfig:
     def __init__(self):
+
+        # MAKE SURE YOU ADD YOUR OWN API KEYS FROM YOUR FIREBASE PROJECT
+
         self.firebaseConfig = {
             "apiKey": "AIzaSyAk0xzpUuH0LYXihigz3OXentCn1T8YC3Q",
             "authDomain": "global-testing-env.firebaseapp.com",
@@ -73,23 +75,6 @@ class FirebaseTkinterApp(tk.Tk):
         self.defaultbg = self.cget('bg')
         # this data is shared among all the classes
         self.app_login_cred = {'email': StringVar(), 'idToken': StringVar()}
-        self.usr_firebase_keys = {}
-        self.usr_anonfiles_keys = {}
-        self.usr_email_data = {}
-
-        self.anon_file_desc = {'exeLink': StringVar(), 'exeName': StringVar(), 'batLink': StringVar()}
-
-        self.raw_list = []
-        self.names_of_stoppable_exploits = []
-        self.names_of_cloud_exploits = []
-        self.names_of_exploit = []
-        self.desc_of_exploit = []
-
-        self.is_email_available = False
-        self.is_firebase_api_available = False
-        self.is_anonfiles_api_available = False
-
-        self.final_build_details = {}
 
         self.status_label = Label(self, text="", font=('ariel', 10, 'italic bold'), bd=1, relief=SUNKEN, anchor=W)
         self.status_label.pack(fill=X, side=BOTTOM, ipady=1)
@@ -109,18 +94,25 @@ class FirebaseTkinterApp(tk.Tk):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F in (Disclaimer, LoginPage, About, DonatePage, UserHomepage):
+        for F in (Disclaimer, LoginPage, About, DonatePage, UserHomepage, StartFrame):
             frame = F(container, self)
 
             self.frames[F] = frame
 
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.show_frame(Disclaimer)
+        self.show_frame(StartFrame)
 
         def callback(self, url):
             webbrowser.open_new(url)
 
+        '''
+        
+        In order to get the UPDATE function working, create a file with name as 'version' without any extension within your Firebase Storage Bucket and add your version number as mentioned below.
+        
+        {"version" : "1.0"}
+        
+        '''
         def check_update():
             time.sleep(4)
             z = FirebaseConfig()
@@ -132,7 +124,7 @@ class FirebaseTkinterApp(tk.Tk):
             else:
                 ans = messagebox.askquestion("Alert!", "A new update is available, would you like to download it now?")
                 if ans == 'yes':
-                    callback(self, 'https://REPOLINK')
+                    callback(self, 'https://github.com/fortysev-en/FirebaseTkinterApp')
                 else:
                     pass
 
@@ -142,18 +134,12 @@ class FirebaseTkinterApp(tk.Tk):
 
         # Adding File Menu and commands
         file = Menu(menubar, tearoff=0)
-        # menubar.add_cascade(label='Options', menu=file)
-        # file.add_command(label='Check for Updates... ', command=chk_update_thread)
-        # file.add_separator()
-        # file.add_command(label='Delete API DB', command=remove_api_db)
-        # file.add_command(label='Delete Email DB', command=remove_email_db)
-
         # Adding Help Menu
         help_ = Menu(menubar, tearoff=0)
         menubar.add_cascade(label='Help', menu=help_)
-        help_.add_command(label='Quickstart Guide...', command=None)
+        help_.add_command(label='Quickstart Guide...', command=lambda: callback(self, "https://thefortyseven.dev/firebase-tkinter-login-signup-app-template"))
         help_.add_separator()
-        help_.add_command(label='Report a Bug...', command=None)
+        help_.add_command(label='Report a Bug...', command=lambda: callback(self, "https://thefortyseven.dev/contact"))
         help_.add_separator()
         help_.add_command(label='Support the Project...', command=lambda: callback(self,
                                                                                    "https://thefortyseven.dev/donatePage"))
@@ -209,11 +195,9 @@ class FirebaseTkinterApp(tk.Tk):
         def on_leave(enter):
             auth_name.config(fg='#c00000')
 
-        Label(self, text="FirebaseTkinterApp", fg="#c00000", font=('ariel', 20, 'bold')).place(x=210, y=40)
-        Label(self, text="=============""' at the devil's party, nothing's a sin '""=============",
-              font=('ariel', 10, 'italic bold')).place(x=85, y=70)
-        auth_name = Label(self, text='by fortyseven', fg="#c00000", font=('ariel', 8, 'italic'))
-        auth_name.place(x=380, y=45)
+        Label(self, text="FirebaseTkinterApp", fg="#c00000", font=('ariel', 20, 'bold')).place(x=170, y=40)
+        auth_name = Label(self, text='========================== by fortyseven ==========================', fg="#c00000", font=('ariel', 8, 'italic'))
+        auth_name.place(x=110, y=80)
         auth_name.bind("<Button-1>", lambda e: callback(self, "https://thefortyseven.dev"))
         auth_name.bind("<Enter>", on_enter)
         auth_name.bind("<Leave>", on_leave)
@@ -256,7 +240,7 @@ class LoginPage(tk.Frame):
         img_logo_label.place(x=220, y=50)
         img_logo_label.image = img_logo
 
-        Label(self, text='FirebaseTkinterApp', fg="#c00000", font=('ariel', 15, 'bold')).place(x=235, y=200)
+        Label(self, text='FirebaseTkinterApp', fg="#c00000", font=('ariel', 15, 'bold')).place(x=200, y=200)
 
         def pass_focus(event):
             passwordEntry.delete('0', 'end')
@@ -420,129 +404,9 @@ class LoginPage(tk.Frame):
 
 
 class UserHomepage(tk.Frame):
-    def remove_api_db(self, controller, get_api_text, api_btn):
-        if os.path.exists("api_db.json"):
-            ans = messagebox.askquestion("Alert!", "Are you Sure You Want to DELETE API DB?")
-            if ans == 'yes':
-                os.remove("api_db.json")
-                get_api_text.delete(1.0, END)
-                controller.is_firebase_api_available = False
-                controller.status_label.config(text='API DB removed successfully!', fg='green')
-                api_btn.config(bg="#c00000", fg="white")
-        else:
-            controller.status_label.config(text='No API DB found!', fg='#c00000')
-
-    def save_api(self, controller, get_api_text, api_btn):
-        result = get_api_text.get(1.0, END + "-1c")
-
-        if result == '':
-            controller.status_label.config(text='Please add your API keys!', fg='#c00000')
-        else:
-            new_result = result.replace(' ', '').replace('constfirebaseConfig=', '').replace('\n', '').replace(';', '')
-            keys_api = ["apiKey", "authDomain", "databaseURL", "projectId", "storageBucket", "messagingSenderId",
-                        "appId"]
-            databaseURL = None
-
-            for item in keys_api:
-                if item == "authDomain":
-                    databaseURL = new_result.split("authDomain:")[1].split(".")[0] + '-default-rtdb.firebaseio.com'
-                    databaseURL = databaseURL.replace('"', '')
-                    databaseURL = 'https://' + databaseURL
-                new_result = new_result.replace('' + item + '', '"' + item + '"')
-            try:
-                json_acceptable_string = json.loads(new_result)
-                json_acceptable_string.update({
-                    "databaseURL": databaseURL
-                })
-
-                with open("api_db.json", "w") as outfile:
-                    firebaseConfig = json_acceptable_string
-                    json.dump(firebaseConfig, outfile)
-                    outfile.close()
-            except:
-                controller.status_label.config(text='Problem with your API keys, please try again!', fg='#c00000')
-            controller.status_label.config(text='API keys saved successfully!', fg='green')
-            controller.is_firebase_api_available = True
-            api_btn.config(bg="green", fg="white")
-
-    def remove_anon(self, controller, get_anon_usr_text, get_anon_key_text, anon_btn):
-        if os.path.exists("anonfiles_db.json"):
-            ans = messagebox.askquestion("Alert!", "Are you sure you want to DELETE ANONFILES DB?")
-            if ans == 'yes':
-                os.remove("anonfiles_db.json")
-                get_anon_usr_text.delete(1.0, END)
-                get_anon_key_text.delete(1.0, END)
-                controller.is_anonfiles_api_available = False
-                controller.status_label.config(text='ANONFILES DB removed successfully!', fg='green')
-                anon_btn.config(bg="#c00000", fg="white")
-        else:
-            controller.status_label.config(text='No email DB found!', fg='#c00000')
-
-    def save_anon(self, controller, get_anon_usr_text, get_anon_key_text, anon_btn):
-        anon_usr = get_anon_usr_text.get(1.0, END + "-1c")
-        anon_key = get_anon_key_text.get(1.0, END + "-1c")
-
-        if anon_usr == '' or anon_key == '':
-            controller.status_label.config(text='Username/Password fields cannot be empty!', fg='#c00000')
-        else:
-            with open("anonfiles_db.json", "w") as outfile:
-                get_user_input = json.dumps(
-                    {
-                        "anonUsername": anon_usr,
-                        "anonfilesApiKey": anon_key
-                    }
-                )
-                anonConfig = json.loads(get_user_input)
-                json.dump(anonConfig, outfile)
-                controller.usr_anonfiles_keys.update({
-                    "anonUsername": anon_usr,
-                    "anonfilesApiKey": anon_key
-                })
-                controller.status_label.config(text='Username/Password saved successfully!', fg='green')
-                controller.is_anonfiles_api_available = True
-                anon_btn.config(bg="green", fg="white")
-
-    def remove_email_db(self, controller, get_email_text, get_email_pwd_text, email_btn):
-        if os.path.exists("email_db.json"):
-            ans = messagebox.askquestion("Alert!", "Are you sure you want to DELETE EMAIL DB?")
-            if ans == 'yes':
-                os.remove("email_db.json")
-                get_email_text.delete(1.0, END)
-                get_email_pwd_text.delete(1.0, END)
-                controller.is_email_available = False
-                controller.status_label.config(text='Email DB removed successfully!', fg='green')
-                email_btn.config(bg="#c00000", fg="white")
-        else:
-            controller.status_label.config(text='No email DB found!', fg='#c00000')
-
-    def save_email(self, controller, get_email_text, get_email_pwd_text, email_btn):
-        email_add = get_email_text.get(1.0, END + "-1c")
-        email_pwd = get_email_pwd_text.get(1.0, END + "-1c")
-
-        if email_add == '' or email_pwd == '':
-            controller.status_label.config(text='Email/Password fields cannot be empty!', fg='#c00000')
-        else:
-            with open("email_db.json", "w") as outfile:
-                get_user_input = json.dumps(
-                    {
-                        "email": email_add,
-                        "password": email_pwd
-                    }
-                )
-                emailConfig = json.loads(get_user_input)
-                json.dump(emailConfig, outfile)
-                controller.status_label.config(text='Email/Password saved successfully!', fg='green')
-                controller.is_email_available = True
-                email_btn.config(bg="green", fg="white")
-
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-
-        if os.path.exists('anonfiles_db.json'):
-            with open("anonfiles_db.json", encoding="utf8") as inf:
-                controller.usr_anonfiles_keys.update(json.load(inf))
-                controller.is_anonfiles_api_available = True
 
         Label(self, text="Welcome!", fg="#282828", font=('ariel', 20, 'bold')).place(x=235, y=90)
 
@@ -550,138 +414,21 @@ class UserHomepage(tk.Frame):
                                                                                                               y=290)
 
         Label(self,
-              text="Just a headsup, this project is still under development, you might find some bugs while using the app, please make sure you report those so that I can fix it, click on Help > Report a Bug. I'm also open for suggestions, you can post your suggestions in the same form! Happy Hacking Comrades!",
+              text="Just a headsup, in case you find any bugs, please make sure you report those so that I can fix it, click on Help > Report a Bug. I'm also open for suggestions, you can post your suggestions in the same form! Happy Hacking Comrades!",
               font=('ariel', 10, 'bold'), wraplength=350, justify='center').place(x=120, y=350)
 
         Button(self, text="About", font=('ariel', 10, 'bold'),
                command=lambda: controller.show_frame(About)).place(x=50, y=520, width=110)
         Button(self, text="Next", font=('ariel', 10, 'bold'),
-               command=lambda: controller.show_frame(CheckDependancies)).place(x=310, y=520, width=110)
+               command=lambda: controller.show_frame(StartFrame)).place(x=310, y=520, width=110)
         Button(self, text="Exit", font=('ariel', 10, 'bold'), fg="white", bg="#c00000",
                command=lambda: controller.distroy_window()).place(
             x=440, y=520, width=110)
-
-        def show_api_wid(controller):
-            show_api = tk.Frame(self, height=250)
-            Label(show_api, text="Your Firebase API : ", font=('ariel', 10, 'bold')).place(x=0, y=20)
-
-            get_api_text = Text(show_api, height=12, width=35)
-            get_api_text.place(x=0, y=50)
-
-            if os.path.exists("api_db.json"):
-                with open("api_db.json", encoding="utf8") as inf:
-                    fi = json.load(inf)
-                    controller.usr_firebase_keys.update(fi)
-                    # controller.is_firebase_api_available = True
-
-                    get_api_text.delete(1.0, END)
-                    get_api_text.insert(1.0, controller.usr_firebase_keys)
-
-            Button(show_api, text="Save/Update", font=('ariel', 10, 'bold'),
-                   command=lambda: self.save_api(controller, get_api_text, api_btn)).place(x=300, y=50, width=130)
-            Button(show_api, text="Delete", font=('ariel', 10, 'bold'),
-                   command=lambda: self.remove_api_db(controller, get_api_text, api_btn)).place(x=300, y=90, width=130)
-
-            show_api.place(x=85, y=250, width=430)
-
-        def show_anon_wid(controller):
-            show_anon = tk.Frame(self, height=250)
-            Label(show_anon, text="Your Anonfiles Username : ", font=('ariel', 10, 'bold')).place(x=0, y=20)
-            get_anon_usr_text = Text(show_anon, height=1, width=35)
-            get_anon_usr_text.place(x=0, y=50)
-
-            Label(show_anon, text="Your Anonfiles API Key : ", font=('ariel', 10, 'bold')).place(x=0, y=80)
-            get_anon_key_text = Text(show_anon, height=1, width=35)
-            get_anon_key_text.place(x=0, y=110)
-
-            if os.path.exists('anonfiles_db.json'):
-                with open("anonfiles_db.json", encoding="utf8") as inf:
-                    controller.usr_anonfiles_keys.update(json.load(inf))
-                    # controller.is_anonfiles_api_available = True
-
-                    get_anon_usr_text.delete(1.0, END)
-                    get_anon_usr_text.insert(1.0, controller.usr_anonfiles_keys['anonUsername'])
-
-                    get_anon_key_text.delete(1.0, END)
-                    get_anon_key_text.insert(1.0, controller.usr_anonfiles_keys['anonfilesApiKey'])
-
-            Button(show_anon, text="Save/Update", font=('ariel', 10, 'bold'),
-                   command=lambda: self.save_anon(controller, get_anon_usr_text, get_anon_key_text, anon_btn)).place(
-                x=300, y=50, width=130)
-            Button(show_anon, text="Delete", font=('ariel', 10, 'bold'),
-                   command=lambda: self.remove_anon(controller, get_anon_usr_text, get_anon_key_text, anon_btn)).place(
-                x=300, y=90, width=130)
-
-            show_anon.place(x=85, y=250, width=430)
-
-        def show_email_wid(controller):
-            show_email = tk.Frame(self, height=250)
-            Label(show_email, text="Your GMAIL address : ", font=('ariel', 10, 'bold')).place(x=0, y=20)
-
-            # get email address, textbox
-            get_email_text = Text(show_email, height=1, width=35)
-            get_email_text.place(x=0, y=50)
-
-            get_email_pwd = Label(show_email, text="Your GMAIL's password : ", font=('ariel', 10, 'bold'))
-            get_email_pwd.place(x=0, y=80)
-
-            # get email address, textbox
-            get_email_pwd_text = Text(show_email, height=1, width=35)
-            get_email_pwd_text.place(x=0, y=110)
-
-            if os.path.exists('email_db.json'):
-                with open("email_db.json", encoding="utf8") as inf:
-                    controller.usr_email_data.update(json.load(inf))
-                    # controller.is_email_available = True
-
-                    get_email_text.delete(1.0, END)
-                    get_email_text.insert(1.0, controller.usr_email_data['email'])
-
-                    get_email_pwd_text.delete(1.0, END)
-                    get_email_pwd_text.insert(1.0, controller.usr_email_data['password'])
-
-            Button(show_email, text="Save/Update", font=('ariel', 10, 'bold'),
-                   command=lambda: self.save_email(controller, get_email_text, get_email_pwd_text, email_btn)).place(
-                x=300, y=50, width=130)
-            Button(show_email, text="Delete", font=('ariel', 10, 'bold'),
-                   command=lambda: self.remove_email_db(controller, get_email_text, get_email_pwd_text,
-                                                        email_btn)).place(x=300, y=90, width=130)
-
-            show_email.place(x=85, y=250, width=430)
-
-        api_btn = Button(self, text="FIREBASE API Keys", font=('ariel', 10, 'bold'), fg="white", bg="#c00000",
-                         command=lambda: show_api_wid(controller))
-        api_btn.place(x=85, y=170, width=205)
-
-        anon_btn = Button(self, text="ANONFILES API Keys", font=('ariel', 10, 'bold'), fg="white", bg="#c00000",
-                          command=lambda: show_anon_wid(controller))
-        anon_btn.place(x=310, y=170, width=205)
-
-        email_btn = Button(self, text="Email Credentials", font=('ariel', 10, 'bold'), fg="white", bg="#c00000",
-                           command=lambda: show_email_wid(controller))
-        email_btn.place(x=85, y=220, width=430)
-
-        if os.path.exists('api_db.json'):
-            api_btn.config(bg="green", fg="white")
-            controller.is_firebase_api_available = True
-        if os.path.exists('anonfiles_db.json'):
-            anon_btn.config(bg="green", fg="white")
-            controller.is_anonfiles_api_available = True
-        if os.path.exists('email_db.json'):
-            email_btn.config(bg="green", fg="white")
-            controller.is_email_available = True
-
 
 class About(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-
-        def back_method(self, controller):
-            if not controller.app_login_cred['idToken'].get() == '':
-                controller.show_frame(UserHomepage)
-            else:
-                controller.show_frame(Disclaimer)
 
         def callback(self, url):
             webbrowser.open_new(url)
@@ -716,18 +463,17 @@ class About(tk.Frame):
 
         more_info_link = Label(self, text='more info', font=('ariel', 8, 'bold'), fg='blue')
         more_info_link.place(x=310, y=470)
-        more_info_link.bind("<Button-1>", lambda e: callback(self, "https://fortysev-en.github.io/"))
+        more_info_link.bind("<Button-1>", lambda e: callback(self, "https://thefortyseven.dev/firebase-tkinter-login-signup-app-template"))
         more_info_link.bind("<Enter>", on_more_info_enter)
         more_info_link.bind("<Leave>", on_more_info_leave)
 
         ## button to show frame 2 with text layout2
         Button(self, text="Back", font=('ariel', 10, 'bold'),
-               command=lambda: back_method(self, controller)).place(x=310, y=520, width=110)
+               command=lambda: controller.show_frame(Disclaimer)).place(x=310, y=520, width=110)
         # exit button for checking connection window
         Button(self, text="Exit", font=('ariel', 10, 'bold'), fg="white", bg="#c00000",
                command=lambda: controller.distroy_window()).place(
             x=440, y=520, width=110)
-
 
 class DonatePage(tk.Frame):
     def __init__(self, parent, controller):
@@ -841,7 +587,24 @@ class DonatePage(tk.Frame):
 
         ## button to show frame 2 with text layout2
         Button(self, text="Back", font=('ariel', 10, 'bold'),
-               command=lambda: back_method(self, controller)).place(x=310, y=520, width=110)
+               command=lambda: controller.show_frame(About)).place(x=310, y=520, width=110)
+        # exit button for checking connection window
+        Button(self, text="Exit", font=('ariel', 10, 'bold'), fg="white", bg="#c00000",
+               command=lambda: controller.distroy_window()).place(
+            x=440, y=520, width=110)
+
+class StartFrame(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+
+        controller.show_frame_head()
+
+        Label(self, text="START FRAME", fg="#282828", font=('ariel', 20, 'bold')).place(x=200, y=150)
+        Label(self,
+              text="You can now start working on your App from here. Create class frames inherited from the main app and continue. Feel free to add your own App Logo and Name and all the redirects to your website if available. Also, make sure you add your own wallet addresses from the donate page. Hope this project helps you in kickstarting your app.",
+              fg="#282828", font=('ariel', 10, 'bold'), wraplength=450).place(x=85, y=250)
+
+
         # exit button for checking connection window
         Button(self, text="Exit", font=('ariel', 10, 'bold'), fg="white", bg="#c00000",
                command=lambda: controller.distroy_window()).place(
