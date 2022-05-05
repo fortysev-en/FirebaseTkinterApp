@@ -101,7 +101,7 @@ class FirebaseTkinterApp(tk.Tk):
 
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.show_frame(Disclaimer)
+        self.show_frame(UserHomepage)
 
         def callback(self, url):
             webbrowser.open_new(url)
@@ -402,9 +402,9 @@ class UserHomepage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        Label(self, text="Welcome!", fg="#282828", font=('ariel', 20, 'bold')).place(x=235, y=100)
+        Label(self, text="Welcome!", fg="#282828", font=('ariel', 20, 'bold')).place(x=235, y=150)
 
-        Label(self, text="Thank you for downloading FirebaseTkinterApp!", font=('ariel', 13, 'bold'), fg='green').place(x=150,
+        Label(self, text="Thank you for downloading FirebaseTkinterApp!", font=('ariel', 13, 'bold'), fg='green').place(x=120,
                                                                                                               y=290)
 
         Label(self,
@@ -424,6 +424,12 @@ class About(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+
+        def back_method(self, controller):
+            if not controller.app_login_cred['idToken'].get() == '':
+                controller.show_frame(UserHomepage)
+            else:
+                controller.show_frame(Disclaimer)
 
         def callback(self, url):
             webbrowser.open_new(url)
@@ -464,7 +470,7 @@ class About(tk.Frame):
 
         ## button to show frame 2 with text layout2
         Button(self, text="Back", font=('ariel', 10, 'bold'),
-               command=lambda: controller.show_frame(Disclaimer)).place(x=310, y=520, width=110)
+               command=lambda: back_method(self, controller)).place(x=310, y=520, width=110)
         # exit button for checking connection window
         Button(self, text="Exit", font=('ariel', 10, 'bold'), fg="white", bg="#c00000",
                command=lambda: controller.distroy_window()).place(
