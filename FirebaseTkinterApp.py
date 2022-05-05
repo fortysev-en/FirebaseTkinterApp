@@ -453,7 +453,7 @@ class About(tk.Frame):
         Label(self, text=f"FirebaseTkinterApp\nversion_number: v{controller.current_version}", font=('ariel', 12, 'bold'),
               justify="center").place(x=210, y=160)
         Label(self,
-              text="FirebaseTkinterApp is an open source tool which is used to generate Windows Exploitation Packages. This tool is capable of generating Windows Executables consisting of a malware. It could be used to study the vulnerabilities, and ultimately help us prevent them.\n\n\nThe application has an unique feature to fetch new available exploits developed by the author (me) from a cloud database and make them available for users (like you) to generate an exploit.\n\n\nIf you like my work, please consider to donate, it will not only encourage me but will keep this project live long.",
+              text="FirebaseTkinterApp is an open source tool which can be extended further and used as a template or boiler plate to generate a user based app with login and signup feature.\n\n\nYou can use various features from Firebase such as Cloud Database and Realtime Database in order to fetch and save data which again could be used in varios purpose.\n\n\nIf you like my work, please consider to donate, it will not only encourage me but will keep this project live long.",
               fg="#282828", font=('ariel', 10, 'bold'), wraplength=450).place(x=75, y=230)
 
         donate_link = Label(self, text='donate', font=('ariel', 8, 'bold'), fg='blue')
