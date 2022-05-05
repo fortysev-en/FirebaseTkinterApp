@@ -39,6 +39,30 @@ plate to generate a user based app with login and signup feature.
 * Auto UPDATE check feature
 
 
+## Setup -
+Simply install all the dependencies by:  
+`pip install -r requirements.txt`
+
+Firebase Setup:  
+1. Make sure you create a project and then a web app in firebase.  
+2. Get the `SDK setup and configuration` from `Project Settings`.  
+3. Copy YOUR OWN API keys as mentioned below and add it in `FirebaseTkinterApp`
+```
+const firebaseConfig = {
+  apiKey: "",
+  authDomain: "",
+  databaseURL: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+```
+4. Add a version file in that projects Cloud Storage and add below in it.  
+`{"version" : "1.0"}`
+
+5. That's it! You can now continue with the project!
+
 
 ## Screenshots -
 
