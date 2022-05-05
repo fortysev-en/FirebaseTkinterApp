@@ -101,7 +101,7 @@ class FirebaseTkinterApp(tk.Tk):
 
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.show_frame(StartFrame)
+        self.show_frame(Disclaimer)
 
         def callback(self, url):
             webbrowser.open_new(url)
@@ -305,7 +305,7 @@ class LoginPage(tk.Frame):
 
             def call_reset_pwd():
                 response = a.reset_password(usernameEntry.get())
-                if response:
+                if response is None:
                     controller.status_label.config(text="Password reset email sent successfully!", fg="green")
                 else:
                     controller.status_label.config(text="Invalid email, please try again!", fg="#c00000")
@@ -408,7 +408,7 @@ class UserHomepage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        Label(self, text="Welcome!", fg="#282828", font=('ariel', 20, 'bold')).place(x=235, y=90)
+        Label(self, text="Welcome!", fg="#282828", font=('ariel', 20, 'bold')).place(x=235, y=100)
 
         Label(self, text="Thank you for downloading FirebaseTkinterApp!", font=('ariel', 13, 'bold'), fg='green').place(x=150,
                                                                                                               y=290)
@@ -447,7 +447,7 @@ class About(tk.Frame):
         def on_more_info_leave(event):
             more_info_link.config(fg='blue')
 
-        Label(self, text="ABOUT", fg="#282828", font=('ariel', 20, 'bold')).place(x=245, y=90)
+        Label(self, text="ABOUT", fg="#282828", font=('ariel', 20, 'bold')).place(x=245, y=100)
 
         Label(self, text=f"FirebaseTkinterApp\nversion_number: v{controller.current_version}", font=('ariel', 12, 'bold'),
               justify="center").place(x=210, y=160)
@@ -479,7 +479,7 @@ class DonatePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        Label(self, text="DONATE", fg="#282828", font=('ariel', 20, 'bold')).place(x=230, y=90)
+        Label(self, text="DONATE", fg="#282828", font=('ariel', 20, 'bold')).place(x=230, y=100)
         Label(self,
               text="Since you're already here, I Thank You for your support. You're one of those people who encourage me to work harder and keep going in the right direction. Your donation will not only boost me but also help this project live.",
               fg="#282828", font=('ariel', 10, 'bold'), wraplength=450).place(x=75, y=150)
@@ -596,8 +596,6 @@ class DonatePage(tk.Frame):
 class StartFrame(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-
-        controller.show_frame_head()
 
         Label(self, text="START FRAME", fg="#282828", font=('ariel', 20, 'bold')).place(x=200, y=150)
         Label(self,
